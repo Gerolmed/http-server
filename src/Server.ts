@@ -1,11 +1,16 @@
 import { Server } from "net";
+import { type } from "os";
 import { HttpRequest } from "./HttpRequest";
 import { HttpResponse } from "./HttpResponse";
 
 var server: Server | null
 
+export var CONFIG: Config = require('../config.json')
+
 export function runServer() {
     return new Promise(resolve => {
+
+
         console.log("Starting server")
         server = new Server(
             (socket) => {
@@ -61,8 +66,8 @@ export function runServer() {
         
         })
             
-        server.listen(6789, "127.0.0.1", () => {
-            console.log("Started server")
+        server.listen(CONFIG.port, CONFIG.host, () => {
+            console.log("Started server on " + CONFIG.host + ":" + CONFIG.port)
             resolve()
         })
     })
@@ -76,4 +81,11 @@ export async function stopServer() {
         server = null
         resolve()
     }))
+}
+
+
+type Config = {
+    port: number,
+    host: string,
+    public_directory: string
 }

@@ -1,5 +1,6 @@
 import * as fs from "fs"
 import * as path from "path"
+import { CONFIG } from "./Server"
 
 export class HttpResponse {
     constructor(
@@ -10,7 +11,7 @@ export class HttpResponse {
     ) {}
 
     setFile(filePath: string) {
-        this.body = fs.readFileSync(path.join(__dirname, "..", "public", filePath)).toString()
+        this.body = fs.readFileSync(path.join(__dirname, "..", CONFIG.public_directory, filePath)).toString()
     }
 
     setContentType(type: ContentType) {
