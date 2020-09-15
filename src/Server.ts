@@ -1,4 +1,6 @@
 import { Server } from "net";
+import { HttpRequest } from "./HttpRequest";
+import { HttpResponse } from "./HttpResponse";
 
 var server: Server | null
 
@@ -19,18 +21,42 @@ export function runServer() {
         server.on("connection", (socket) => {
             socket.on("data", rawData => {
         
-                const data = rawData.toString()
+                const data = rawData.toString().split(/\r\n/)
+                let request!: HttpRequest;
+                try {
+                    let line1 = data[0].split(" ")
 
-                if(!data || data.split(" ").length < 2) {
-                    socket.write("ERROR can't find someword\n")
+                    request = {
+                        method: line1[0] as "OPTIONS" | "GET" | "HEAD" | "POST" | "PUT" | "DELETE" | "TRACE" | "CONNECT",
+                        resource: line1[1],
+                        version: line1[2],
+                        headers: {}
+                    }
+
+                    for (let i = 1; i < data.length && data[i] !== ""; i++) {
+                        const header = data[i];
+                        const pair = header.split(" ");
+
+                        const key = pair[0].substr(0, pair[0].length-1);
+                        const value = pair[1];
+                        request.headers[key] = value
+                    }
+                    
+                } catch (error) {
+                    socket.write("error")
                     socket.end()
-                    return;
+                    return
                 }
-                const command = data.split(" ", 1)[0]
-                const body = data.substr(command.length+1)
-            
-                socket.write("ANSWER " + body)
+                const response = new HttpResponse()
+                
+                response.setFile("index.html")
+                response.setContentType("text/html")
+
+                socket.write(response.produceString())
+                socket.write("\n")
+
                 socket.end()
+                return
             })
         
         })
