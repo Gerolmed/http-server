@@ -1,7 +1,8 @@
 import { Server } from "net";
 import { type } from "os";
+import { join } from "path";
 import { HttpRequest } from "./HttpRequest";
-import { HttpResponse } from "./HttpResponse";
+import { HttpResponse, HttpStatuses } from "./HttpResponse";
 
 var server: Server | null
 
@@ -46,15 +47,17 @@ export function runServer() {
                         const value = pair[1];
                         request.headers[key] = value
                     }
+
+                    if(request.resource.search("..") > 0) throw new Error("May not be relative upwards pointing path")
                     
                 } catch (error) {
-                    socket.write("error")
+                    socket.write(new HttpResponse(HttpStatuses.BAD_REQUEST, "Invalid request").produceString())
                     socket.end()
                     return
                 }
                 const response = new HttpResponse()
                 
-                response.setFile("index.html")
+                response.setFile(request.resource.endsWith("/") ? join(request.resource, "index.html") : request.resource)
                 response.setContentType("text/html")
 
                 socket.write(response.produceString())

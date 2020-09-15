@@ -11,7 +11,11 @@ export class HttpResponse {
     ) {}
 
     setFile(filePath: string) {
-        this.body = fs.readFileSync(path.join(__dirname, "..", CONFIG.public_directory, filePath)).toString()
+        try {
+            this.body = fs.readFileSync(path.join(__dirname, "..", CONFIG.public_directory, filePath)).toString()
+        } catch (error) {
+            this.body = undefined
+        }
     }
 
     setContentType(type: ContentType) {
@@ -61,6 +65,7 @@ export class HttpStatuses {
 
 
     public static OK: HttpStatus = {index: 200, name: "OK"}
+    public static BAD_REQUEST: HttpStatus = {index: 400, name: "BAD REQUEST"}
 }
 
 type ContentType = "text/html" | "text/plain";
