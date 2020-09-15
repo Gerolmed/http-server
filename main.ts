@@ -1,3 +1,3 @@
 import { runServer } from "./src/Server";
 
-runServer()
+runServer(require('./config.json'))

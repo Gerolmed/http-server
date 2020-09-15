@@ -1,14 +1,14 @@
 import { Server } from "net";
-import { type } from "os";
 import { join } from "path";
 import { HttpRequest } from "./HttpRequest";
 import { HttpResponse, HttpStatuses } from "./HttpResponse";
 
 var server: Server | null
 
-export var CONFIG: Config = require('../config.json')
+export var CONFIG!: Config
 
-export function runServer() {
+export function runServer(config: Config) {
+    CONFIG = config
     return new Promise(resolve => {
 
 
@@ -87,7 +87,7 @@ export async function stopServer() {
 }
 
 
-type Config = {
+export type Config = {
     port: number,
     host: string,
     public_directory: string

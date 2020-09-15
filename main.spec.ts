@@ -1,12 +1,18 @@
 import { Socket } from "net";
-import { runServer, stopServer } from "./src/Server";
+import { Config, runServer, stopServer } from "./src/Server";
+
+const CONFIG: Config = {
+    host: "127.0.0.1",
+     port: 6789,
+      public_directory: "public"
+    }
 
 it("Run test",  async () => {  
     return new Promise(async (resolve) => {
-        await runServer();
+        await runServer(CONFIG);
 
         var client = new Socket()
-        client.connect(6789, "127.0.0.1", () => {
+        client.connect(CONFIG.port, CONFIG.host, () => {
             console.log('Connected');
             client.write('Hello, server! Love, Client.');
         })
